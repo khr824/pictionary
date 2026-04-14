@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pictionary Slideshow</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --accent: #f43f5e;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            border: 2px solid #334155;
+            transition: transform 0.3s ease;
+        }
+
+        .phrase {
+            font-size: 2.5rem;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        button {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-next { background-color: var(--primary); color: white; }
+        .btn-next:hover { background-color: #4f46e5; transform: translateY(-2px); }
+
+        .btn-reset { background-color: transparent; color: #94a3b8; border: 1px solid #334155; }
+        .btn-reset:hover { background-color: #334155; color: white; }
+
+        .stats {
+            margin-top: 1rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .finished { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card" id="card">
+            <div class="phrase" id="phrase-display">Click "Next" to Start!</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-next" onclick="nextPhrase()" id="next-btn">Next Phrase</button>
+            <button class="btn-reset" onclick="resetGame()">Reset Deck</button>
+        </div>
+
+        <div class="stats" id="stats">
+            Remaining: 40 / 40
+        </div>
+    </div>
+
+    <script>
+        const allPhrases = [
+            "Monkey eating pizza", "Dog wearing sunglasses", "Cat stuck in a box", 
+            "Banana slipping on a person", "Dinosaur riding a bicycle", "Chicken playing video games", 
+            "Elephant dancing ballet", "Penguin holding an ice cream", "Fish driving a car", 
+            "Cow jumping on a trampoline", "Alien drinking coffee", "Robot brushing its teeth", 
+            "Pirate taking a selfie", "Ghost eating a sandwich", "Shark wearing a hat", 
+            "Frog singing on stage", "Bear hugging a tree", "Spider cooking pasta", 
+            "Turtle racing a rabbit", "Snake wearing shoes", "Wizard using a laptop", 
+            "Superhero stuck in traffic", "Knight riding a skateboard", "Princess eating a burger", 
+            "Vampire brushing teeth", "Zombie at a birthday party", "Dragon blowing bubbles", 
+            "Unicorn stuck in traffic", "Mermaid using a phone", "Giant stepping on a LEGO", 
+            "Baby lifting weights", "Teacher sleeping in class", "Kid walking a dinosaur", 
+            "Chef burning toast", "Person slipping on soap", "Man juggling chickens", 
+            "Woman chasing a balloon", "Person hugging a cactus", "Kid flying with balloons", 
+            "Family of ducks watching TV"
+        ];
+
+        let usedIndices = JSON.parse(localStorage.getItem('pictionary_used')) || [];
+
+        function updateUI(text) {
+            const display = document.getElementById('phrase-display');
+            display.textContent = text;
+            
+            const remaining = allPhrases.length - usedIndices.length;
+            document.getElementById('stats').textContent = `Remaining: ${remaining} / ${allPhrases.length}`;
+            
+            if (remaining === 0) {
+                document.getElementById('next-btn').style.display = 'none';
+                display.classList.add('finished');
+            } else {
+                document.getElementById('next-btn').style.display = 'inline-block';
+                display.classList.remove('finished');
+            }
+        }
+
+        function nextPhrase() {
+            const availableIndices = allPhrases
+                .map((_, index) => index)
+                .filter(index => !usedIndices.includes(index));
+
+            if (availableIndices.length === 0) {
+                updateUI("No phrases left!");
+                return;
+            }
+
+            const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+            usedIndices.push(randomIndex);
+            
+            // Save to Local Storage
+            localStorage.setItem('pictionary_used', JSON.stringify(usedIndices));
+            
+            updateUI(allPhrases[randomIndex]);
+        }
+
+        function resetGame() {
+            if (confirm("Are you sure you want to reset the deck?")) {
+                usedIndices = [];
+                localStorage.removeItem('pictionary_used');
+                updateUI('Deck Reset! Click Next.');
+            }
+        }
+
+        // Initialize display on load
+        window.onload = () => {
+            if (usedIndices.length > 0 && usedIndices.length < allPhrases.length) {
+                updateUI("Ready to continue?");
+            } else if (usedIndices.length >= allPhrases.length) {
+                updateUI("Game Finished!");
+            } else {
+                updateUI("Pictionary Time!");
+            }
+        };
+    </script>
+</body>
+</html>
