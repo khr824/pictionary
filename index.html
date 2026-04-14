@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pictionary Slideshow</title>
+    <title>Pictionary: Boys vs Girls</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;800&display=swap');
 
         * {
             box-sizing: border-box;
@@ -15,124 +15,212 @@
 
         body {
             font-family: 'Nunito', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             color: #333;
+            padding: 20px;
         }
 
         .container {
             text-align: center;
-            width: 90%;
-            max-width: 800px;
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         h1 {
             font-family: 'Fredoka One', cursive;
             color: white;
-            font-size: 3rem;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
             letter-spacing: 2px;
+            margin-bottom: 10px;
         }
 
-        .card {
-            background: white;
+        /* Scoreboard Styles */
+        .scoreboard {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
             border-radius: 20px;
-            padding: 60px 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            min-height: 300px;
+            backdrop-filter: blur(5px);
+        }
+
+        .team {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            min-width: 200px;
+        }
+
+        .team.boys h2 { color: #2b6cb0; font-family: 'Fredoka One', cursive; }
+        .team.girls h2 { color: #b83280; font-family: 'Fredoka One', cursive; }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #2d3748;
+            transition: all 0.3s ease;
+        }
+
+        .add-point-btn {
+            padding: 8px 20px;
+            font-size: 1.2rem;
+            border-radius: 20px;
+            background: #ecc94b;
+            color: #744210;
+        }
+        .add-point-btn:hover { background: #d69e2e; }
+
+        /* Timer Styles */
+        .timer-section {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 30px;
-            transition: transform 0.2s;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 50px;
+            color: white;
+        }
+
+        .timer-display {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            min-width: 120px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .timer-btn {
+            background: #ed8936;
+            padding: 10px 20px;
+            font-size: 1rem;
+        }
+        .timer-btn:hover { background: #dd6b20; }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             position: relative;
+            gap: 20px;
         }
 
         .phrase-text {
             font-family: 'Fredoka One', cursive;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: #2d3748;
             line-height: 1.3;
+            transition: opacity 0.3s;
         }
 
-        .controls {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
+        .phrase-text.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
+        .hide-toggle-btn {
+            background: #718096;
+            font-size: 1rem;
+            padding: 8px 25px;
+        }
+        .hide-toggle-btn:hover { background: #4a5568; }
+
+        /* General Button Styles */
         button {
             font-family: 'Nunito', sans-serif;
             font-weight: bold;
-            font-size: 1.2rem;
-            padding: 15px 40px;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        button.next {
-            background-color: #48bb78;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             color: white;
         }
 
-        button.next:hover {
-            background-color: #38a169;
-            transform: translateY(-2px);
+        button:active { transform: translateY(2px); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
         }
 
-        button.reset {
-            background-color: #f56565;
-            color: white;
-        }
+        .next { background-color: #48bb78; padding: 15px 40px; font-size: 1.2rem; }
+        .next:hover { background-color: #38a169; }
 
-        button.reset:hover {
-            background-color: #e53e3e;
-            transform: translateY(-2px);
-        }
+        .reset { background-color: #f56565; padding: 15px 40px; font-size: 1.2rem; }
+        .reset:hover { background-color: #e53e3e; }
 
-        button:active {
-            transform: translateY(1px);
-        }
+        .counter { color: rgba(255,255,255,0.8); font-size: 1.1rem; font-weight: bold; }
 
-        .counter {
-            color: white;
-            margin-top: 20px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            opacity: 0.8;
-        }
-
-        /* Animation for drawing a new card */
+        /* Animations */
         @keyframes popIn {
             0% { transform: scale(0.9); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
+        .animate-pop { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-        .animate-pop {
-            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        @keyframes scoreBounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.6) rotate(-5deg); color: #48bb78; }
+            100% { transform: scale(1); }
         }
+        .animate-score { animation: scoreBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>PICTIONARY</h1>
+        <h1>PICTIONARY BATTLE</h1>
+
+        <div class="scoreboard">
+            <div class="team boys">
+                <h2>Boys</h2>
+                <div class="score-display" id="score-boys">0</div>
+                <button class="add-point-btn" onclick="addPoint('boys')">+ Add Point</button>
+            </div>
+            <div class="team girls">
+                <h2>Girls</h2>
+                <div class="score-display" id="score-girls">0</div>
+                <button class="add-point-btn" onclick="addPoint('girls')">+ Add Point</button>
+            </div>
+        </div>
+
+        <div class="timer-section">
+            <div class="timer-display" id="timer-display">01:30</div>
+            <button class="timer-btn" id="timer-toggle-btn" onclick="toggleTimer()">Start Timer</button>
+            <button class="timer-btn" style="background:#a0aec0;" onclick="resetTimer()">Reset Time</button>
+        </div>
         
         <div class="card" id="card">
             <div class="phrase-text" id="phrase-display">Ready to draw?</div>
+            <button class="hide-toggle-btn" id="hide-btn" onclick="toggleClueVisibility()" style="display: none;">Hide Clue</button>
         </div>
 
         <div class="controls">
             <button class="next" id="next-btn" onclick="nextPhrase()">Next Phrase</button>
-            <button class="reset" id="reset-btn" onclick="resetGame()">Reset Game</button>
+            <button class="reset" id="reset-btn" onclick="resetGame()">Reset Entire Game</button>
         </div>
 
         <div class="counter" id="counter">Phrases left: 0</div>
@@ -140,133 +228,203 @@
 
     <script>
         const allPhrases = [
-            "Monkey eating pizza",
-            "Dog wearing sunglasses",
-            "Cat stuck in a box",
-            "Banana slipping on a person",
-            "Dinosaur riding a bicycle",
-            "Chicken playing video games",
-            "Elephant dancing ballet",
-            "Penguin holding an ice cream",
-            "Fish driving a car",
-            "Cow jumping on a trampoline",
-            "Alien drinking coffee",
-            "Robot brushing its teeth",
-            "Pirate taking a selfie",
-            "Ghost eating a sandwich",
-            "Shark wearing a hat",
-            "Frog singing on stage",
-            "Bear hugging a tree",
-            "Spider cooking pasta",
-            "Turtle racing a rabbit",
-            "Snake wearing shoes",
-            "Wizard using a laptop",
-            "Superhero stuck in traffic",
-            "Knight riding a skateboard",
-            "Princess eating a burger",
-            "Vampire brushing teeth",
-            "Zombie at a birthday party",
-            "Dragon blowing bubbles",
-            "Unicorn stuck in traffic",
-            "Mermaid using a phone",
-            "Giant stepping on a LEGO",
-            "Baby lifting weights",
-            "Teacher sleeping in class",
-            "Kid walking a dinosaur",
-            "Chef burning toast",
-            "Person slipping on soap",
-            "Man juggling chickens",
-            "Woman chasing a balloon",
-            "Person hugging a cactus",
-            "Kid flying with balloons",
-            "Family of ducks watching TV"
+            "Monkey eating pizza", "Dog wearing sunglasses", "Cat stuck in a box", "Banana slipping on a person",
+            "Dinosaur riding a bicycle", "Chicken playing video games", "Elephant dancing ballet", "Penguin holding an ice cream",
+            "Fish driving a car", "Cow jumping on a trampoline", "Alien drinking coffee", "Robot brushing its teeth",
+            "Pirate taking a selfie", "Ghost eating a sandwich", "Shark wearing a hat", "Frog singing on stage",
+            "Bear hugging a tree", "Spider cooking pasta", "Turtle racing a rabbit", "Snake wearing shoes",
+            "Wizard using a laptop", "Superhero stuck in traffic", "Knight riding a skateboard", "Princess eating a burger",
+            "Vampire brushing teeth", "Zombie at a birthday party", "Dragon blowing bubbles", "Unicorn stuck in traffic",
+            "Mermaid using a phone", "Giant stepping on a LEGO", "Baby lifting weights", "Teacher sleeping in class",
+            "Kid walking a dinosaur", "Chef burning toast", "Person slipping on soap", "Man juggling chickens",
+            "Woman chasing a balloon", "Person hugging a cactus", "Kid flying with balloons", "Family of ducks watching TV"
         ];
 
         let availablePhrases = [];
+        let scores = { boys: 0, girls: 0 };
+        
+        // Timer variables (90 seconds = 1.5 mins)
+        const DEFAULT_TIME = 90; 
+        let timeLeft = DEFAULT_TIME;
+        let timerInterval = null;
+        let isTimerRunning = false;
+        
+        let clueIsHidden = false;
+        let currentPhrase = "Ready to draw?";
+
+        // DOM Elements
         const display = document.getElementById('phrase-display');
         const counter = document.getElementById('counter');
         const nextBtn = document.getElementById('next-btn');
+        const hideBtn = document.getElementById('hide-btn');
+        const scoreBoysEl = document.getElementById('score-boys');
+        const scoreGirlsEl = document.getElementById('score-girls');
+        const timerDisplay = document.getElementById('timer-display');
+        const timerToggleBtn = document.getElementById('timer-toggle-btn');
 
         // Initialize game on page load
         function initGame() {
             const savedPhrases = localStorage.getItem('pictionary_phrases');
+            const savedScores = localStorage.getItem('pictionary_scores');
             
-            if (savedPhrases) {
-                availablePhrases = JSON.parse(savedPhrases);
-            } else {
-                availablePhrases = [...allPhrases];
+            if (savedPhrases) availablePhrases = JSON.parse(savedPhrases);
+            else availablePhrases = [...allPhrases];
+
+            if (savedScores) {
+                scores = JSON.parse(savedScores);
+                scoreBoysEl.textContent = scores.boys;
+                scoreGirlsEl.textContent = scores.girls;
             }
             
             updateCounter();
+            updateTimerDisplay();
             
             if (availablePhrases.length === 0) {
                 display.innerHTML = "🎉<br>Game Over!<br>All phrases used.";
                 nextBtn.disabled = true;
                 nextBtn.style.opacity = '0.5';
-                nextBtn.style.cursor = 'not-allowed';
-            } else {
-                display.textContent = "Click 'Next Phrase' to start!";
             }
         }
 
-        // Fetch the next random phrase
+        // --- GAME LOGIC ---
+
         function nextPhrase() {
             if (availablePhrases.length === 0) return;
 
             // Pick a random index
             const randomIndex = Math.floor(Math.random() * availablePhrases.length);
-            const selectedPhrase = availablePhrases[randomIndex];
+            currentPhrase = availablePhrases[randomIndex];
 
-            // Remove phrase from available list
+            // Remove phrase from available list and save
             availablePhrases.splice(randomIndex, 1);
-
-            // Save new state to local storage
             localStorage.setItem('pictionary_phrases', JSON.stringify(availablePhrases));
+
+            // Unhide clue if hidden
+            clueIsHidden = false;
+            display.classList.remove('hidden');
+            display.textContent = currentPhrase;
+            hideBtn.style.display = 'block';
+            hideBtn.textContent = 'Hide Clue';
 
             // Animate text
             display.classList.remove('animate-pop');
-            void display.offsetWidth; // Trigger reflow to restart animation
+            void display.offsetWidth; // Trigger reflow
             display.classList.add('animate-pop');
 
-            // Display text
-            display.textContent = selectedPhrase;
+            // Reset Timer for the new round
+            resetTimer();
 
             updateCounter();
 
-            // Check if game over
             if (availablePhrases.length === 0) {
                 nextBtn.disabled = true;
                 nextBtn.style.opacity = '0.5';
-                nextBtn.style.cursor = 'not-allowed';
-                setTimeout(() => {
-                    display.innerHTML = "🎉<br>That was the last one!";
-                }, 2000);
+                setTimeout(() => display.innerHTML = "🎉<br>That was the last one!", 2000);
             }
         }
 
-        // Reset the game completely
+        function toggleClueVisibility() {
+            clueIsHidden = !clueIsHidden;
+            if (clueIsHidden) {
+                display.classList.add('hidden');
+                hideBtn.textContent = 'Show Clue';
+            } else {
+                display.classList.remove('hidden');
+                hideBtn.textContent = 'Hide Clue';
+            }
+        }
+
+        // --- SCORE LOGIC ---
+
+        function addPoint(team) {
+            scores[team]++;
+            localStorage.setItem('pictionary_scores', JSON.stringify(scores));
+            
+            const scoreEl = team === 'boys' ? scoreBoysEl : scoreGirlsEl;
+            scoreEl.textContent = scores[team];
+            
+            // Trigger Bounce Animation
+            scoreEl.classList.remove('animate-score');
+            void scoreEl.offsetWidth; // Trigger reflow
+            scoreEl.classList.add('animate-score');
+        }
+
+        // --- TIMER LOGIC ---
+
+        function updateTimerDisplay() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function toggleTimer() {
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                timerToggleBtn.textContent = "Resume Timer";
+                timerToggleBtn.style.background = "#ed8936";
+            } else {
+                if (timeLeft === 0) return; // Prevent starting if at 0
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        timerToggleBtn.textContent = "Time's Up!";
+                        timerToggleBtn.style.background = "#e53e3e";
+                        // Play a simple alert or just change color
+                        timerDisplay.style.color = "#fc8181";
+                    }
+                }, 1000);
+                timerToggleBtn.textContent = "Pause Timer";
+                timerToggleBtn.style.background = "#d69e2e";
+            }
+            isTimerRunning = !isTimerRunning;
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timeLeft = DEFAULT_TIME;
+            updateTimerDisplay();
+            timerDisplay.style.color = "white";
+            timerToggleBtn.textContent = "Start Timer";
+            timerToggleBtn.style.background = "#ed8936";
+        }
+
+        // --- RESET ALL ---
+
         function resetGame() {
-            if (confirm("Are you sure you want to reset? This will put all phrases back in the mix.")) {
+            if (confirm("Are you sure you want to reset everything? Phrases and Scores will be cleared.")) {
+                // Reset Phrases
                 availablePhrases = [...allPhrases];
                 localStorage.setItem('pictionary_phrases', JSON.stringify(availablePhrases));
                 
-                display.textContent = "Game Reset! Click 'Next Phrase' to start.";
+                // Reset Scores
+                scores = { boys: 0, girls: 0 };
+                localStorage.setItem('pictionary_scores', JSON.stringify(scores));
+                scoreBoysEl.textContent = 0;
+                scoreGirlsEl.textContent = 0;
                 
-                // Re-enable next button
+                // Reset UI
+                display.classList.remove('hidden');
+                display.textContent = "Game Reset! Click 'Next Phrase' to start.";
+                hideBtn.style.display = 'none';
+                
                 nextBtn.disabled = false;
                 nextBtn.style.opacity = '1';
-                nextBtn.style.cursor = 'pointer';
                 
+                resetTimer();
                 updateCounter();
             }
         }
 
-        // Update the visual counter
         function updateCounter() {
             counter.textContent = `Phrases left: ${availablePhrases.length} / ${allPhrases.length}`;
         }
 
-        // Start everything up
+        // Start
         window.onload = initGame;
     </script>
 </body>
